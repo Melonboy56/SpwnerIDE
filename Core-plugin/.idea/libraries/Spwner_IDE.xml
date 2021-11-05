@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Spwner IDE">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Spwner IDE/out/artifacts/Spwner_IDE_jar/Spwner IDE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

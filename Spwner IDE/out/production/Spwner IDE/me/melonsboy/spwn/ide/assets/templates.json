@@ -1,0 +1,14 @@
+[
+  {
+    "template":
+    {
+      "0":{"path":"src","type":"folder"},
+      "1":{"path":"src\/main.spwn","type":"file"},
+      "2":{"path":"src\/main.spwn","text":"\/\/ write your code here\n","type":"filewrite"},
+      "3":{"path":"src\/main.spwn","type":"open"},
+      "4": {"type": "compileconfig","name": "Main","version": "0.6 Beta","path": "src/main.spwn"},
+      "5": {"type": "selectcompileconfig","name": "Main"}
+    },
+    "name":"Default"
+  }
+]

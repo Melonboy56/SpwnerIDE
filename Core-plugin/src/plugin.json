@@ -1,0 +1,7 @@
+{
+  "mainclass": "me.melonsboy.plugins.spwner_ide.core_plugin.Plugin",
+  "name": "Spwner IDE Core plugin",
+  "version": "Alpha v1.0",
+  "id": "1-SpwnerIDE_Core",
+  "owner": ["Melonsboy"]
+}

@@ -1,0 +1,24 @@
+This is alpha version v1.1, By Melonsboy
+
+New features:
+ - Added compile configurations
+ - Added a compiler downloader
+ - Added window state saving
+ - Recreated settings dialog
+ - Added Themes
+ - Added Tab Icons
+ - Added Plugin support
+
+Also thanks for JetBrains for making some icons that are used in this program!
+
+Bug fixes:
+ - Fixed a bug where any project becomes unopenable when any project folder doesn't exist
+
+I got some plans for Spwner IDE in the future and they are:
+ - Add a geometry dash player built into Spwner IDE (so you can test your code without opening GD) <- this feature would be cool xD
+ - Re add project file viewer (so a tree view instead of a single folder view)
+ - Maybe add hot reload for integrated GD player?
+ - Add a package manager (downloads packages from pckp.spwn.it website)
+ - Code a program launcher (in c++) for Windows, Linux and MacOS!
+
+and this is alpha 1.1 of this IDE (build 2)
