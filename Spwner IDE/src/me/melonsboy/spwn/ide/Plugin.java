@@ -31,6 +31,13 @@ public class Plugin {
 
     }
 
+    /**
+     * This method returns the settings panel
+     */
+    public JPanel get_settings_panel() {
+        return null;
+    }
+
     protected final String get_project_folder() {
         return API.get_project_folder();
     }

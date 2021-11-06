@@ -1,32 +1,32 @@
 package me.melonsboy.spwn.ide;
 
-import com.sun.javafx.PlatformUtil;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import me.melonsboy.spwn.ide.custom.compilers_source;
 import me.melonsboy.spwn.ide.themes.Theme;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static me.melonsboy.spwn.ide.compile.*;
 
 public class settings {
     private static HashMap<String,JPanel> panels = new HashMap<>();
+    private static ArrayList<String> panels_string_path = new ArrayList<>();
     private static ArrayList<JComponent> smallcomponents = new ArrayList<>();
     private static boolean is_init = false;
     private static String appearanceandbehavior_text = "Appearance and Behavior";
@@ -34,6 +34,7 @@ public class settings {
     private static String behavior_text = "Behavior";
     private static String compilers_text = "Compilers";
     private static String network_text = "Network";
+    private static String plugin_settings_text = "Plugin Settings";
 
     private static JTextField fontsetting_panel_input;
     private static JCheckBox openproject_on_startup_panel_checkbox;
@@ -52,6 +53,22 @@ public class settings {
     }
     private static void init_panels(JDialog dialog,JPanel panel1) {
         if (is_init) {return;}
+        // plugins
+        {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel,BoxLayout.PAGE_AXIS));
+            panels.put(plugin_settings_text,panel);
+            panels_string_path.add(plugin_settings_text);
+        }
+        // adds the plugin's settings
+        {
+            for (Map.Entry<String,pluginloader> i : Main.pluginHashMap.entrySet()) {
+                JPanel panel = i.getValue().plugin.get_settings_panel();
+                if (panel==null) {continue;}
+                panels.put(plugin_settings_text+"/"+i.getValue().name,panel);
+                panels_string_path.add(plugin_settings_text+"/"+i.getValue().name);
+            }
+        }
         // network
         {
             JPanel panel = new JPanel();
@@ -70,6 +87,7 @@ public class settings {
             }
 
             panels.put(appearanceandbehavior_text+"/"+network_text,panel);
+            panels_string_path.add(appearanceandbehavior_text+"/"+network_text);
         }
         // appearance and behavior
         {
@@ -83,6 +101,7 @@ public class settings {
             panel.add(descriptionlabel);
             smallcomponents.add(descriptionlabel);
             panels.put(appearanceandbehavior_text,panel);
+            panels_string_path.add(appearanceandbehavior_text);
         }
         // appearance
         {
@@ -155,6 +174,7 @@ public class settings {
             panel.setBounds(0,0,600,(Main.font.getSize()+10)*(panel.getComponents().length+1));
 
             panels.put(appearanceandbehavior_text+"/"+appearance_text,displaypanel);
+            panels_string_path.add(appearanceandbehavior_text+"/"+appearance_text);
         }
 
         // behavior
@@ -165,6 +185,7 @@ public class settings {
             //openproject_on_startup_panel_checkbox.setPreferredSize(new Dimension(settingspanel.getPreferredSize().width-10,Main.font.getSize()));
             panel.add(openproject_on_startup_panel_checkbox);
             panels.put(appearanceandbehavior_text+"/"+behavior_text,panel);
+            panels_string_path.add(appearanceandbehavior_text+"/"+behavior_text);
         }
         // compilers
         {
@@ -248,8 +269,7 @@ public class settings {
                         }
                     }
                 }
-                if (true) {return;}
-
+                /*
                 JDialog downloading_content_dialog = new JDialog(Main.idewindow.windowframe,"Downloading compilers list",true);
                 downloading_content_dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 downloading_content_dialog.setResizable(false);
@@ -443,6 +463,7 @@ public class settings {
                 dialog1.add(buttonspanel, BorderLayout.PAGE_END);
 
                 dialog1.setVisible(true);
+                */
             });
             panel.add(download_compiler_button,BorderLayout.PAGE_END);
 
@@ -534,10 +555,32 @@ public class settings {
             panel.add(listpanel);
 
             panels.put(compilers_text,panel);
+            panels_string_path.add(compilers_text);
         }
         is_init=true;
     }
-    private static void get_tree(JTree tree,JPanel right_panel) {
+    private static void list_memory_files(String filepath, FileSystem fileSystem, HashMap<DefaultMutableTreeNode, String> treeNodeHashMap) throws IOException {
+        Files.list(fileSystem.getPath(filepath)).forEachOrdered(path -> {
+            DefaultMutableTreeNode defaultMutableTreeNode = new DefaultMutableTreeNode(path.getFileName());
+            treeNodeHashMap.put(defaultMutableTreeNode,path.getParent().toString());
+            if (Files.isDirectory(path)) {
+                try {
+                    list_memory_files(path.toString(),fileSystem, treeNodeHashMap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+    private static DefaultMutableTreeNode get_parent(String parent_name,HashMap<DefaultMutableTreeNode,String> treeNodeHashMap) {
+        for (Map.Entry<DefaultMutableTreeNode,String> i : treeNodeHashMap.entrySet()) {
+            if (i.getKey().toString().equalsIgnoreCase(parent_name)) {
+                return i.getKey();
+            }
+        }
+        return null;
+    }
+    private static void get_tree(JTree tree,JPanel right_panel) throws IOException {
         DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode();
         tree.setCellRenderer(new DefaultTreeCellRenderer() {
             @Override
@@ -555,7 +598,26 @@ public class settings {
                 return null;
             }
         });
-
+        FileSystem jimfs_filesys = Jimfs.newFileSystem(Configuration.unix().toBuilder().setWorkingDirectory("/").build());
+        for (String i : panels_string_path) {
+            Path path = jimfs_filesys.getPath(i);
+            Files.createDirectories(path);
+        }
+        HashMap<DefaultMutableTreeNode,String> treeNodeHashMap = new HashMap<>();
+        Files.list(jimfs_filesys.getPath("")).forEachOrdered(filepath -> {
+            try {
+                DefaultMutableTreeNode defaultMutableTreeNode = new DefaultMutableTreeNode(filepath.getFileName());
+                treeNodeHashMap.put(defaultMutableTreeNode,"");
+                list_memory_files(filepath.toString(),jimfs_filesys,treeNodeHashMap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        for (Map.Entry<DefaultMutableTreeNode,String> i : treeNodeHashMap.entrySet()) {
+            DefaultMutableTreeNode defaultMutableTreeNode = get_parent(i.getValue(),treeNodeHashMap);
+            Objects.requireNonNullElse(defaultMutableTreeNode, treeNode).add(i.getKey());
+        }
+        /*
         // Appearance and behavior
         DefaultMutableTreeNode appearanceAndBehaviornode = new DefaultMutableTreeNode(appearanceandbehavior_text);
         treeNode.add(appearanceAndBehaviornode);
@@ -575,6 +637,7 @@ public class settings {
         // compilers
         DefaultMutableTreeNode compilersnode = new DefaultMutableTreeNode(compilers_text);
         treeNode.add(compilersnode);
+         */
 
         DefaultTreeModel defaultTreeModel = new DefaultTreeModel(treeNode);
         tree.addTreeSelectionListener(e -> {
@@ -593,7 +656,7 @@ public class settings {
         }
         SwingUtilities.updateComponentTreeUI(settingsdialog);
     }
-    private static void refresh_components(JPanel settingsdialog, JDialog jDialog,TreePath treePath) {
+    private static void refresh_components(JPanel settingsdialog, JDialog jDialog,TreePath treePath) throws IOException {
         settingsdialog.removeAll();
         settingsdialog.setLayout(new BorderLayout());
         JSplitPane splitPane = new JSplitPane();
@@ -634,9 +697,13 @@ public class settings {
             jDialog.setVisible(false);
         });
         saveclosedialogbutton.addActionListener(e -> {
-            savechangesbutton.doClick();
-            refresh_components(settingsdialog, jDialog,null);
-            jDialog.setVisible(false);
+            try {
+                savechangesbutton.doClick();
+                refresh_components(settingsdialog, jDialog,null);
+                jDialog.setVisible(false);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
         buttonspanel.add(savechangesbutton);
         buttonspanel.add(cancelbutton);

@@ -8,14 +8,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -29,14 +23,14 @@ import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 
 public class util {
     public static void show_compiler_config(JSONObject compilerconfigs,Object refresh_combobox_sel) {
         compiler_config.show_compiler_config(compilerconfigs,refresh_combobox_sel);
     }
+
+
     /**
      *
      * @return the folder path of the jar file
@@ -127,6 +121,9 @@ public class util {
         } else if (PlatformUtil.isLinux()) {
             return true;
         } else return PlatformUtil.isMac();
+    }
+    public static void add_nodes(DefaultMutableTreeNode rootnode, DefaultMutableTreeNode treeNode) {
+
     }
 
     /**

@@ -55,12 +55,33 @@ public class Main {
         }
     }
 
+    static void set_missing_config_values() throws IOException, ParseException {
+        configjson.putIfAbsent("project_paths",new JSONArray());
+        configjson.putIfAbsent("fontsize",25);
+        configjson.putIfAbsent("last_project_location",null);
+        configjson.putIfAbsent("last_projects_dir",(System.getProperty("user.home")+"\\SpwnerProjects").replaceAll("\\\\","/"));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream("assets/templates.json")));
+        configjson.putIfAbsent("templates",new JSONParser().parse(bufferedReader));
+        configjson.putIfAbsent("bottomsplit",500);
+        configjson.putIfAbsent("middlesplit",400);
+        configjson.putIfAbsent("open_project_on_startup",true);
+        configjson.putIfAbsent("open_changelog_message",true);
+        configjson.putIfAbsent("mainwindow_width",900);
+        configjson.putIfAbsent("mainwindow_height",600);
+        configjson.putIfAbsent("mainwindow_is_maxed",false);
+        configjson.putIfAbsent("theme_name","");
+        configjson.putIfAbsent("proxy_detection_mode",0);
+        bufferedReader.close();
+        save_config();
+    }
+
     static void setup_program() throws IOException, ParseException {
         // creates the files before loading the rest the program (if the files don't exist)
         File file = new File(mainfolder_path+"/config.json");
         if (!file.exists()) {
             file.createNewFile();
             JSONObject configjson = new JSONObject();
+            /*
             configjson.put("project_paths",new JSONArray());
             configjson.put("fontsize",25);
             configjson.put("last_project_location",null);
@@ -76,6 +97,8 @@ public class Main {
             configjson.put("mainwindow_is_maxed",false);
             configjson.put("theme_name","");
             configjson.put("proxy_detection_mode",0);
+            bufferedReader.close();
+             */
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(configjson.toJSONString());
             fileWriter.close();
@@ -145,7 +168,7 @@ public class Main {
     public static void create_window() throws Exception {
         if (!util.can_run()) {
             JOptionPane.showMessageDialog(null,"Your operating system is not supported.","Error",JOptionPane.ERROR_MESSAGE);
-            return;
+            System.exit(0);
         }
         System.setProperty("sun.java2d.uiScale", "1.0");
         System.setProperty("java.net.useSystemProxies","true");
@@ -167,6 +190,7 @@ public class Main {
         }
         setup_program();
         configjson = (JSONObject) new JSONParser().parse(new FileReader(mainfolder_path+"/config.json"));
+        set_missing_config_values();
         load_plugins();
         theme_loader.load_themes();
         font = new Font(new JLabel().getFont().getFontName(),Font.BOLD,Integer.parseInt(configjson.get("fontsize").toString()));

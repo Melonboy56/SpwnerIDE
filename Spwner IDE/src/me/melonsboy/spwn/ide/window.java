@@ -45,7 +45,7 @@ public class window {
                 }
             }
         });
-        /**
+        /*
          * windowframe.addComponentListener(new ComponentAdapter() {
          *             @Override
          *             public void componentResized(ComponentEvent e) {
