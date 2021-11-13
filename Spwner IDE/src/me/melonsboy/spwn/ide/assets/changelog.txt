@@ -8,6 +8,7 @@ New features:
  - Added Themes
  - Added Tab Icons
  - Added Plugin support
+ - Added Native Launcher for Windows, MacOS and Linux!
 
 Also thanks for JetBrains for making some icons that are used in this program!
 
@@ -19,6 +20,5 @@ I got some plans for Spwner IDE in the future and they are:
  - Re add project file viewer (so a tree view instead of a single folder view)
  - Maybe add hot reload for integrated GD player?
  - Add a package manager (downloads packages from pckp.spwn.it website)
- - Code a program launcher (in c++) for Windows, Linux and MacOS!
 
 and this is alpha 1.1 of this IDE (build 2)

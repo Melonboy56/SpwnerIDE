@@ -1,0 +1,3 @@
+﻿  Windows Launcher.cpp
+M:\Spwner IDE versions\1.1 alpha\Windows Launcher\Windows Launcher\Windows Launcher.cpp(27,37): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Windows Launcher.vcxproj -> M:\Spwner IDE versions\1.1 alpha\Windows Launcher\x64\Debug\Windows Launcher.exe

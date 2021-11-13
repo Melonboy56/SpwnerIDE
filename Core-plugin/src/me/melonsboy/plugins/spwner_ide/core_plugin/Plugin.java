@@ -451,7 +451,7 @@ public class Plugin extends me.melonsboy.spwn.ide.Plugin {
                     public JPanel get_instance() {
                         ProcessBuilder processBuilder = new ProcessBuilder();
                         if (PlatformUtil.isWindows()) {processBuilder.command().add("cmd.exe");}
-                        if (PlatformUtil.isLinux()) {processBuilder.command().add("xterm");}
+                        if (PlatformUtil.isLinux()) {processBuilder.command().add("bash");}
                         if (PlatformUtil.isMac()) {processBuilder.command().add("terminal.app");}
                         processBuilder.redirectErrorStream(true);
                         JPanel panel = new JPanel(new BorderLayout());

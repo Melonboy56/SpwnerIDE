@@ -1,6 +1,7 @@
 package me.melonsboy.spwn.ide;
 
 import com.google.common.io.Files;
+import com.sun.javafx.PlatformUtil;
 import me.melonsboy.spwn.ide.custom.compiler;
 import me.melonsboy.spwn.ide.custom.compilers_source;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -9,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import sun.font.FontManagerNativeLibrary;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,8 +52,24 @@ public class Main {
     static HashMap<compilers_source,Plugin> compilersSourcePluginHashMap = new HashMap<>();
 
     static void disable_plugins() {
-        for (Map.Entry<String,pluginloader> i : pluginHashMap.entrySet()) {
+        for (Map.Entry<String, pluginloader> i : pluginHashMap.entrySet()) {
             i.getValue().plugin.onDisable();
+        }
+    }
+
+    private static void prevent_future_crashes() {
+        //System.setProperty("java.library.path","C:\\Windows\\Sun\\Java\\bin;C:\\Windows\\system32;C:\\Windows;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\dotnet\\;C:\\Program Files\\spwn\\;C:\\Users\\Melon\\AppData\\Local\\Programs\\Python\\Python39\\Scripts\\;C:\\Users\\Melon\\AppData\\Local\\Programs\\Python\\Python39\\;C:\\Users\\Melon\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\Melon\\.dotnet\\tools;C:\\Users\\Melon\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\Melon\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;M:\\Melon OS operating system\\compiler tools\\nasm-2.15.05-win64\\nasm-2.15.05;C:\\Users\\Melon\\Downloads\\Dependencies_x64_Release;C:\\Users\\Melon\\.jdks\\corretto-11.0.12\\bin\\server;");
+        //System.out.println(System.getProperty("java.library.path"));
+        if (PlatformUtil.isWindows()) {
+            //System.load("C:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2021.1.1/jbr/bin" + "/fontmanager.dll");
+            new Thread() {
+                @Override
+                public void run() {
+                    //System.loadLibrary("harfbuzz");
+                    //FontManagerNativeLibrary.load();
+                    //while (true) {System.loadLibrary("fontmanager");}
+                }
+            }.start();
         }
     }
 
@@ -133,6 +151,9 @@ public class Main {
     }
     private static void load_plugins() throws Exception {
         load_plugins(mainfolder_path+"/plugins");
+        if (PlatformUtil.isWindows()) {load_plugins(new File(ide_get_exe_path()).getParent()+"/plugins");}
+        if (PlatformUtil.isLinux()) {load_plugins(new File(ide_get_exe_path())+"/plugins");}
+        if (PlatformUtil.isMac()) {load_plugins(new File(ide_get_exe_path())+"/plugins");}
     }
     public static void start_and_open_project(String projectpath) throws Exception {
         create_window();
@@ -156,18 +177,23 @@ public class Main {
         }
     }
 
+    //private static native String ide_get_java_bin_install();
+    private static native String ide_get_exe_path();
+
     /**
      * Spwner IDE Alpha version 1.1
      * By Melonsboy
      */
     public static void start_program() throws Exception {
+        //prevent_future_crashes();
         create_window();
         open_project();
+        check_proxy();
     }
 
     public static void create_window() throws Exception {
         if (!util.can_run()) {
-            JOptionPane.showMessageDialog(null,"Your operating system is not supported.","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Your operating system is not supported.", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
         System.setProperty("sun.java2d.uiScale", "1.0");

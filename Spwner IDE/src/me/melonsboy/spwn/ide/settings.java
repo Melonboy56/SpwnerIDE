@@ -723,7 +723,7 @@ public class settings {
     }
     public static void settings() throws IOException, UnsupportedLookAndFeelException {
         JDialog settingsdialog = new JDialog(Main.idewindow.windowframe,"Settings",true);
-        settingsdialog.setSize(new Dimension(1500,900));
+        settingsdialog.setSize(new Dimension(900,600));
         JPanel panel = new JPanel();
         init_panels(settingsdialog,panel);
         settingsdialog.setLayout(new BorderLayout());

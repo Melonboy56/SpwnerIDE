@@ -4,7 +4,6 @@ import me.melonsboy.spwn.ide.exceptions.theme_already_exists;
 import me.melonsboy.spwn.ide.themes.Theme;
 import me.melonsboy.spwn.ide.themes.flatIntelliJlaf;
 import me.melonsboy.spwn.ide.themes.flatdarculalaf;
-import me.melonsboy.spwn.ide.themes.native_theme;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
@@ -22,10 +21,9 @@ public class theme_loader {
         return arrayList;
     }
 
-    static void load_themes() throws ClassNotFoundException, InstantiationException, IllegalAccessException, theme_already_exists {
+    static void load_themes() throws theme_already_exists {
         add_theme(new flatdarculalaf());
         add_theme(new flatIntelliJlaf());
-        add_theme(new native_theme());
 
         selected_theme=arrayList.get(0);
         for (Theme i : arrayList) {

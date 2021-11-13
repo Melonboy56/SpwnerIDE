@@ -37,6 +37,7 @@ public class editor extends JPanel {
         try {
             Main.idewindow.windowframe.setTitle(projectjson.get("projectname")+" ["+folder_path+"]"+" - "+new File(textEditor.filetabs.getTitleAt(textEditor.filetabs.getSelectedIndex())).getName());
         } catch (IndexOutOfBoundsException exception) {
+            Main.idewindow.windowframe.setTitle(projectjson.get("projectname")+" ["+folder_path+"]");
             exception.printStackTrace();
         }
     }
