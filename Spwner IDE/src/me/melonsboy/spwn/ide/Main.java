@@ -151,9 +151,7 @@ public class Main {
     }
     private static void load_plugins() throws Exception {
         load_plugins(mainfolder_path+"/plugins");
-        if (PlatformUtil.isWindows()) {load_plugins(new File(ide_get_exe_path()).getParent()+"/plugins");}
-        if (PlatformUtil.isLinux()) {load_plugins(new File(ide_get_exe_path())+"/plugins");}
-        if (PlatformUtil.isMac()) {load_plugins(new File(ide_get_exe_path())+"/plugins");}
+        load_plugins(new File(ide_get_exe_path()).getParent()+"/plugins");
     }
     public static void start_and_open_project(String projectpath) throws Exception {
         create_window();
